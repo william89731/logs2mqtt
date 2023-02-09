@@ -1,0 +1,11 @@
+services:
+###############
+#  logs2mqtt   #
+###############
+  logs2mqtt:
+    container_name: logs2mqtt
+    image: william1608/logs2mqtt:1.0
+    volumes:
+      - /var/log/auth.log:/var/log/auth.log
+      - /etc/localtime:/etc/localtime:ro
+    env_file: ./.env
