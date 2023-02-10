@@ -1,0 +1,56 @@
+apiVersion: batch/v1
+kind: CronJob     #JOB FOR 3 NODES
+metadata:
+  name: logs2mqtt
+  labels:
+    jobgroup: parallel
+spec:
+  schedule: "*/30 * * * *"
+  successfulJobsHistoryLimit: 0
+  failedJobsHistoryLimit: 0
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          name: kubejob
+          labels:
+            jobgroup: parallel
+        spec:
+          topologySpreadConstraints:
+            - maxSkew: 1
+              topologyKey: kubernetes.io/hostname
+              whenUnsatisfiable: DoNotSchedule
+              labelSelector:
+                matchLabels:
+                  jobgroup: parallel
+          containers:
+          - env:
+            - name: HOST
+              value: '192.168.0.0'
+            - name: PORT
+              value: '1883'
+            - name: USERNAME
+              value: 'USER'
+            - name: PASSWORD
+              value: 'PASS'
+            - name: TIME  #range
+              value: '-30 min'
+            name: logs2mqtt
+            image: william1608/logs2mqtt:1.1
+            imagePullPolicy: IfNotPresent
+            volumeMounts:
+            - mountPath: /etc/localtime
+              name: timezone
+              readOnly: true
+            - mountPath: /var/log/auth.log
+              name: log
+          volumes:
+          - name: timezone
+            hostPath:
+              path: /etc/localtime
+          - name: log
+            hostPath:
+              path: /var/log/auth.log
+          restartPolicy: Never
+          terminationGracePeriodSeconds: 0
+      parallelism: 3
