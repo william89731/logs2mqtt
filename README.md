@@ -36,4 +36,7 @@ i recommend running the command every 30 min. you can use cron or other preferre
 
  take a minimal config for 3 nodes. [cronjob](https://github.com/william89731/logs2mqtt/blob/main/logs2mqtt-job.yml)
  
+ ### Credit
+ 
+ thanks to [jmmy](https://github.com/JmmyGun) for great idea! 
  
