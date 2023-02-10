@@ -34,6 +34,6 @@ i recommend running the command every 30 min. you can use cron or other preferre
 
 ```use case for kubernetes```
 
- take a minimal config for [cronjob]()
+ take a minimal config for 3 nodes. [cronjob](https://github.com/william89731/logs2mqtt/blob/main/logs2mqtt-job.yml)
  
  
