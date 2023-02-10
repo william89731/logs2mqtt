@@ -36,6 +36,13 @@ i recommend running the command every 30 min. you can use cron or other preferre
 
  take a minimal config for 3 nodes. [cronjob](https://github.com/william89731/logs2mqtt/blob/main/logs2mqtt-job.yml)
  
+ ```what purpose does it serve?```
+ 
+ ...send notification. example, telegram:
+ 
+ ![image](https://user-images.githubusercontent.com/68069659/218189342-52d3c398-81d4-42ce-a62e-0ee74b3a8b05.png)
+
+ 
  ### Credit
  
  thanks to [jmmy](https://github.com/JmmyGun) for great idea! 
