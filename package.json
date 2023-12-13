@@ -1,0 +1,22 @@
+{
+    "name": "logs2mqtt",
+    "version": "1.2.2",
+    "description": "tool to find authentication failure",
+    "main": "index.js",
+    "node": ">=14.16",
+    "scripts": {
+      "start": "node index.js"
+    },
+    "keywords": [],
+    "author": "william",
+    "license": "ISC",
+    "dependencies": {
+      "mqtt": "^5.3.3",
+      "dotenv": "^16.3.1"
+      
+    }
+  
+  }
+  
+
+  
