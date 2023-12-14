@@ -4,8 +4,15 @@ services:
 ###############
   logs2mqtt:
     container_name: logs2mqtt
-    image: william1608/logs2mqtt:$VERSION
+    image: william1608/logs2mqtt:${TAG}
     volumes:
-      - /var/log/auth.log:/var/log/auth.log
+      - /var/log/auth.log:/var/log/auth.log:ro
       - /etc/localtime:/etc/localtime:ro
+    environment:
+      HOSTNAME: ${HOSTNAME}
+      TIME: ${TIME}
+      HOST: ${HOST}
+      USERNAME: ${USER}
+      PASSWORD: ${PASS}
+      PORT: ${PORT} 
     env_file: ./.env
