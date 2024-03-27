@@ -5,8 +5,7 @@ metadata:
   namespace: logs2mqtt
 type: Opaque
 data:
-  host: aG9zdA== #echo -n 'host' | base64
-  username: dXNlcm5hbWU=
+  username: dXNlcm5hbWU=   #e cho -n 'username' | base64
   password: cGFzc3dvcmQ=
 
 ---
@@ -27,19 +26,30 @@ spec:
       labels:
         app: logs2mqtt
     spec:
-      securityContext:
-        runAsUser: 1000
-        runAsGroup: 1000
-        #fsGroup: 2000
       initContainers:
-        - name: init-broker
+        - name: init-perms
+          image: busybox
+          imagePullPolicy: Always
+          command: ["/bin/sh"]
+          args:
+            [
+              "-c",
+              "chmod -R 755 /var/log/auth.log && chown 1000:1000 /var/log/auth.log",
+            ]
+          securityContext:
+            runAsUser: 0
+            privileged: true
+          volumeMounts:
+            - mountPath: /var/log/auth.log
+              name: auth
+        - name: init-broker #rabbitmq
           image: alpine
           imagePullPolicy: Always
           command:
             [
               "sh",
               "-c",
-              "for i in {1..100}; do sleep 1; if nslookup svc-broker.namespace-broker.svc.cluster.local; then exit 0; fi; done; exit 1;",
+              "for i in {1..100}; do sleep 1; if nslookup rabbitmq.rabbitmq-system.svc.cluster.local; then exit 0; fi; done; exit 1;",
             ]
       containers:
         - env:
@@ -48,10 +58,7 @@ spec:
                 fieldRef:
                   fieldPath: spec.nodeName
             - name: HOST
-              valueFrom:
-                secretKeyRef:
-                  name: mqtt
-                  key: host
+              value: "rabbitmq.rabbitmq-system.svc.cluster.local"
             - name: MQTT_PASSWORD
               valueFrom:
                 secretKeyRef:
@@ -72,6 +79,8 @@ spec:
               memory: "200Mi"
               cpu: "200m"
           securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
             privileged: false
             allowPrivilegeEscalation: false
             capabilities:
@@ -80,7 +89,7 @@ spec:
           volumeMounts:
             - mountPath: /var/log/auth.log
               name: auth
-              readOnly: true
+              #readOnly: true
       restartPolicy: Always
       volumes:
         - name: auth
