@@ -29,12 +29,10 @@ logs autentication failed. publish to mqtt
 ```bash
 docker compose up
 ```
-i recommend running the command every 30 min. you can use cron or other preferred method
-
 
 ```use case for kubernetes```
 
- take a minimal config for 3 nodes. [cronjob](https://github.com/william89731/logs2mqtt/blob/main/logs2mqtt-job.yml)
+ run [daemonset](https://github.com/william89731/logs2mqtt/blob/main/daemonset.yml) every node in cluster
  
  ```what purpose does it serve?```
  
@@ -42,6 +40,9 @@ i recommend running the command every 30 min. you can use cron or other preferre
  
  ![image](https://user-images.githubusercontent.com/68069659/218189342-52d3c398-81d4-42ce-a62e-0ee74b3a8b05.png)
 
+topic mqtt:
+
+```logs2mqtt/#```
  
  ### Credit
  
