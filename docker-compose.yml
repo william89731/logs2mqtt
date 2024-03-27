@@ -8,11 +8,12 @@ services:
     volumes:
       - /var/log/auth.log:/var/log/auth.log:ro
       - /etc/localtime:/etc/localtime:ro
+    network_mode: host
     environment:
       HOSTNAME: ${HOSTNAME}
-      TIME: ${TIME}
       HOST: ${HOST}
-      USERNAME: ${USER}
-      PASSWORD: ${PASS}
+      MQTT_USERNAME: ${MQTT_USERNAME}
+      MQTT_PASSWORD: ${MQTT_PASSWORD}
       PORT: ${PORT} 
     env_file: ./.env
+    

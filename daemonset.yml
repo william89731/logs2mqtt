@@ -1,0 +1,88 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mqtt
+  namespace: logs2mqtt
+type: Opaque
+data:
+  host: aG9zdA== #echo -n 'host' | base64
+  username: dXNlcm5hbWU=
+  password: cGFzc3dvcmQ=
+
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  labels:
+    app: logs2mqtt
+  name: logs2mqtt
+  namespace: logs2mqtt
+spec:
+  revisionHistoryLimit: 0
+  selector:
+    matchLabels:
+      app: logs2mqtt
+  template:
+    metadata:
+      labels:
+        app: logs2mqtt
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        #fsGroup: 2000
+      initContainers:
+        - name: init-broker
+          image: alpine
+          imagePullPolicy: Always
+          command:
+            [
+              "sh",
+              "-c",
+              "for i in {1..100}; do sleep 1; if nslookup svc-broker.namespace-broker.svc.cluster.local; then exit 0; fi; done; exit 1;",
+            ]
+      containers:
+        - env:
+            - name: HOSTNAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: HOST
+              valueFrom:
+                secretKeyRef:
+                  name: mqtt
+                  key: host
+            - name: MQTT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mqtt
+                  key: password
+            - name: MQTT_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: mqtt
+                  key: username
+            - name: PORT
+              value: "1883"
+          image: william1608/logs2mqtt
+          imagePullPolicy: IfNotPresent
+          name: logs2mqtt
+          resources:
+            limits:
+              memory: "200Mi"
+              cpu: "200m"
+          securityContext:
+            privileged: false
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+          volumeMounts:
+            - mountPath: /var/log/auth.log
+              name: auth
+              readOnly: true
+      restartPolicy: Always
+      volumes:
+        - name: auth
+          hostPath:
+            path: /var/log/auth.log
